@@ -68,7 +68,7 @@ def builder
   Party.all.each do |party|
     3.times do |i|
       print "What's the #{ord(i)} thing the #{party.name.upcase} want? (EXAMPLE: 'to jump in the pool') "
-      Party.all[i].wants << Want.create(name: gets.chomp)
+      party.wants << Want.create(name: gets.chomp)
     end
      puts ''
   end
