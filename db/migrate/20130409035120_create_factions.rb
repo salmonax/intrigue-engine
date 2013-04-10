@@ -1,6 +1,6 @@
 class CreateFactions < ActiveRecord::Migration
   def change
-    create_table :factions do |t|
+    create_table :parties do |t|
       t.column :name, :string
 
       t.timestamps

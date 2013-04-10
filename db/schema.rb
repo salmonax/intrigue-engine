@@ -11,9 +11,30 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130409035120) do
+ActiveRecord::Schema.define(:version => 20130410063433) do
 
-  create_table "factions", :force => true do |t|
+  create_table "choices", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "parties", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "permutations", :force => true do |t|
+    t.string   "faction_id"
+    t.string   "choice_id"
+    t.string   "want_id"
+    t.string   "permutation_id"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
+
+  create_table "wants", :force => true do |t|
     t.string   "name"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false

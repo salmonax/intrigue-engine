@@ -1,12 +1,16 @@
 #require './spec/spec_helper'
 require 'pg'
 require 'active_record'
-require './app/models/faction'
+require './app/models/choice'
+require './app/models/party'
+require './app/models/permutation'
+require './app/models/want'
+
 my_yaml = YAML::load(File.open('./config/database.yml'))
 yaml_development = my_yaml["development"]
 ActiveRecord::Base.establish_connection(yaml_development)
 DB = PG.connect(:dbname => 'intrigue_development')
-DB.exec("DELETE FROM factions *;")
+DB.exec("DELETE FROM parties *;")
 
 # def cli
 #   puts "Type 'builder' to enter the builder, 'intrigue' to start the prototype."
@@ -26,37 +30,53 @@ def ord(i)
 end
 
 def builder
-  puts "The prototype involves exactly 3 factions."
-  puts "Each faction has 3 initial wants."
+  puts "The prototype involves exactly 3 parties."
+  puts "Each party has 3 initial wants."
   puts "Each initial want is associated with two possible reactions.\n\n"
   puts "Example: "
-  puts "     The 'real estate' faction wants 'to increase sale this week'"
-  puts "     The 'real estate' faction can either:                       "
+  puts "     The 'real estate' party wants 'to increase sale this week'"
+  puts "     The 'real estate' party can :                         \n\n"
   puts "          a) 'follow a lead at the hotel'                        "
   puts "          b) 'threaten its agents with a firing'                 "
   puts "          c) 'do absolutely nothing'                         \n\n"
+  
 
-  puts "At the end of every round, there will be a maximum of 3^3, or 27 combinations of possible responses."
+  puts "At the end of every round, there will be a maximum of 3^3, or 27 possible response combinations."
+  puts "Assuming this affects each of the 3 factions in a unique way, that's 81 total combinations!"
+  puts "If each team gets 3 ways to respone to each of 81 unique states, that's "
+
+  puts "But don't worry! The game will never ask you for that many before helping you to continue the story."
+  puts "The building game is designed to make the story-building process fun."
+  puts" It's trimming down the possibilities in the background!\n\n"
+
   puts "Example: "
-  puts "     The 'real estate' faction decided to 'follow a lead at the hotel' in order to 'increase sales this week'"
-
-
-
-
-
+  puts "     The REAL ESTATE GUYS decided to FOLLOW A LEAD AT THE HOTEL in order to INCREASE SALES THIS WEEK"
+  puts "     The REAL ESTATE GUYS decided to IGNORE THE HOTEL in order to DISTANCE THEMSELVES FROM THE PARTNERSHIP"
 
   3.times do |i|
     print "Who's the #{ord(i)} one? "
-    Faction.create(name: gets.chomp)
+    Party.create(name: gets.chomp)
   end
-  puts "Great. Each faction wants three things starting out. We'll cycle through them now."
-  Faction.all.each_with_index do |faction, i|
-    print "What's the #{ord(i)} thing the '#{faction.name}' faction wants? "
+  puts "Great. Each party wants three things starting out."
+  puts "We'll cycle through them now."
+  Party.all.each do |party|
+    3.times do |i|
+      print "What's the #{ord(i)} thing the '#{party.name}' party wants? (EXAMPLE: 'to jump in the pool')"
+      Party.wants << Want.create(name: gets.chomp)
+    end
+  end
+  Party.all.each do |party|
+    3.times do |i|
+      print "What will the #{party.name} do in order #{party.wants[i].name}?"
+      Party.choices[i].name << Choice.create(name: gets.chomp )
+
   end
 
-  puts "What happens for a Yay vote?"
-  puts "What happens for a Nay vote?"
-  puts "What happens for no vote?"
+  puts "Fantastic! Now we'll cycle through the wants again. You can write an action to do for each. (EXAMPLE: 'put on a pair of swim trunks"
+
+
+  puts "Awesome. Each 'CHOICE in order to PURPOSE' phrase is actually an EVENT." 
+
 
 end
 
