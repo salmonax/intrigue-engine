@@ -1,10 +1,10 @@
 class BuildPermutations < ActiveRecord::Migration
   def change
     create_table :permutations do |t|
-      t.column :faction_id, :string
-      t.column :choice_id, :string
-      t.column :want_id, :string
-      t.column :permutation_id, :string
+      t.column :party_id, :integer
+      t.column :choice_id, :integer
+      t.column :want_id, :integer
+      t.column :permutation_id, :integer
 
       t.timestamps
     end
