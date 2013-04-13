@@ -25,17 +25,22 @@ ActiveRecord::Schema.define(:version => 20130410063433) do
     t.datetime "updated_at", :null => false
   end
 
-  create_table "permutations", :force => true do |t|
+  create_table "parties_wants", :force => true do |t|
     t.integer  "party_id"
-    t.integer  "choice_id"
     t.integer  "want_id"
-    t.integer  "permutation_id"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "wants", :force => true do |t|
     t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "wants_choices", :force => true do |t|
+    t.integer  "want_id"
+    t.integer  "choice_id"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end

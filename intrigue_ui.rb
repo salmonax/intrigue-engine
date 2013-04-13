@@ -4,7 +4,11 @@ require 'active_record'
 require './app/models/choice'
 require './app/models/party'
 require './app/models/permutation'
+require './app/models/parties_want'
+require './app/models/wants_choice'
 require './app/models/want'
+require 'pry'
+require 'pry-debugger'
 
 my_yaml = YAML::load(File.open('./config/database.yml'))
 yaml_development = my_yaml["development"]
@@ -13,8 +17,9 @@ DB = PG.connect(:dbname => 'intrigue_development')
 DB.exec("DELETE FROM parties *;")
 DB.exec("DELETE FROM wants *;")
 DB.exec("DELETE FROM choices *;")
-DB.exec("DELETE FROM permutations *;")
-
+#DB.exec("DELETE FROM permutations *;")
+DB.exec("DELETE FROM parties_wants *;")
+DB.exec("DELETE FROM wants_choices *;")
 
 # def cli
 #   puts "Type 'builder' to enter the builder, 'intrigue' to start the prototype."
@@ -62,29 +67,45 @@ def builder
     Party.create(name: gets.chomp)
   end
   puts ''
-  puts "Great. Each party wants three things starting out."
-  puts "We'll cycle through them now."
+  puts "Great. Each party wants only one thing starting out."
+  puts "Try to make it a simple, immediate want. You will be able to decide on 'ultimate' wants as you move through the story."
   puts ''
   Party.all.each do |party|
-    3.times do |i|
-      print "What's the #{ord(i)} thing the #{party.name.upcase} want? (EXAMPLE: 'to jump in the pool') "
-      party.wants << Want.create(name: gets.chomp)
+    1.times do |i|
+      #binding.pry
+      print "#{ord(i).capitalize}, the #{party.name.upcase} want to... (EXAMPLE: 'jump in the pool') "
+      party.wants.create(name: gets.chomp)
     end
      puts ''
   end
   Party.all.each do |party|
-    3.times do |i|
-      print "What will the #{party.name.upcase} do in order #{party.wants[i].name.upcase}? "
-      party.choices << Choice.create(name: gets.chomp )
+    1.times do |i|
+      print "In order to #{party.wants[i].name.upcase}, the #{party.name.upcase} will..."
+      party.wants[i].choices.create(name: gets.chomp)
     end
     puts ''
   end
-  p Permutation.all
-  puts "Fantastic! Now we'll cycle through the wants again. You can write an action to do for each. (EXAMPLE: 'put on a pair of swim trunks"
 
+  puts "Awesome. Each ACTION and PURPOSE combination is actually a kind of EVENT."
+  puts "However, if you add an alternative ACTION, this EVENT becomes a CHOICE." 
+  puts "Your players will get to vote which course of action to take!"
 
-  puts "Awesome. Each 'CHOICE in order to PURPOSE' phrase is actually an EVENT." 
+  Party.all.each do |party|
+    1.times do |i|
+      print "In order to #{party.wants[i].name.upcase}, the #{party.name.upcase} could #{party.wants[i].choices.first.name.upcase}, but they might also..."
+      possible_choice = gets.chomp
+      party.wants[i].choices.create(name: possible_choice) if possible_choice != ''
+    end
+    puts ''
+  end
 
+  Party.all.each do |party|
+    party.wants.all.each do |want|
+      want.choices.all.each do |choice|
+        puts 'The ' + party.name.upcase + ' decided to ' + choice.name.upcase + ' in order to ' + want.name.upcase 
+      end
+    end
+  end
 
 end
 
